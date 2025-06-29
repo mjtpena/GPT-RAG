@@ -1,0 +1,158 @@
+# Example Terraform variables file for GPT-RAG deployment
+# Copy this file to terraform.tfvars and update the values as needed
+
+# Basic Configuration
+environment_name = "dev"
+location         = "East US"
+principal_id     = "" # Leave empty to use current user, or provide specific principal ID
+
+# VM Configuration (required for network isolation)
+vm_user_initial_password = "YourSecurePassword123!"
+vm_user_name            = "gptrag"
+
+# Network Configuration
+network_isolation = false # Set to true for private network deployment
+deploy_vm        = false # Set to true if you want a VM for management
+
+# Database Configuration
+azure_db_config = {
+  db_account_name                = ""
+  db_database_name               = ""
+  conversation_container_name    = "conversations"
+  datasources_container_name     = "datasources"
+}
+
+# Azure OpenAI Configuration
+chat_gpt_model_name            = "gpt-4o"
+chat_gpt_model_version         = "2024-11-20"
+chat_gpt_deployment_name       = "chat"
+chat_gpt_deployment_capacity   = 40
+embeddings_model_name          = "text-embedding-3-large"
+embeddings_model_version       = "1"
+embeddings_deployment_name     = "text-embedding"
+embeddings_vector_size         = 3072
+embeddings_deployment_capacity = 40
+
+# Search Configuration
+retrieval_approach       = "hybrid"
+search_analyzer_name     = "standard"
+use_semantic_reranking   = false
+search_index            = "ragindex"
+
+# Application Configuration
+provision_application_insights = true
+provision_load_testing        = false
+
+# Language Settings
+orchestrator_messages_language = "en"
+speech_recognition_language   = "en-US"
+speech_synthesis_language     = "en-US"
+speech_synthesis_voice_name   = "en-US-RyanMultilingualNeural"
+
+# Runtime Versions
+func_app_runtime_version    = "3.11"
+app_service_runtime_version = "3.12"
+
+# Chunking Settings
+chunk_num_tokens    = "2048"
+chunk_min_size      = "100"
+chunk_token_overlap = "200"
+
+# Resource Names (leave empty for auto-generation)
+resource_group_name             = ""
+key_vault_name                 = ""
+storage_account_name           = ""
+openai_service_name            = ""
+ai_services_name               = ""
+app_service_plan_name          = ""
+app_insights_name              = ""
+app_service_name               = ""
+load_testing_name              = ""
+orchestrator_function_app_name = ""
+data_ingestion_function_app_name = ""
+search_service_name            = ""
+
+# Network Settings (for custom networking)
+vnet_name                    = ""
+vnet_address                 = ""
+ai_subnet_name               = ""
+ai_subnet_prefix             = ""
+bastion_subnet_prefix        = ""
+app_int_subnet_name          = ""
+app_int_subnet_prefix        = ""
+app_services_subnet_name     = ""
+app_services_subnet_prefix   = ""
+database_subnet_name         = ""
+database_subnet_prefix       = ""
+
+# Private Endpoint Names (for custom naming)
+azure_storage_account_pe  = ""
+azure_db_account_pe      = ""
+azure_keyvault_pe        = ""
+azure_orchestrator_pe    = ""
+azure_frontend_pe        = ""
+azure_data_ingestion_pe  = ""
+azure_ai_services_pe     = ""
+azure_openai_pe          = ""
+azure_search_pe          = ""
+
+# VM Settings (for network isolation scenarios)
+vm_kv_secret_name = ""
+zt_vm_name        = ""
+bastion_kv_name   = ""
+
+# Azure Reuse Configuration (for reusing existing resources)
+azure_reuse_config = {
+  aoai_reuse                                                 = false
+  existing_aoai_resource_group_name                         = ""
+  existing_aoai_name                                        = ""
+  app_insights_reuse                                        = false
+  existing_app_insights_resource_group_name                 = ""
+  existing_app_insights_name                                = ""
+  log_analytics_workspace_reuse                             = false
+  existing_log_analytics_workspace_resource_id              = ""
+  app_service_plan_reuse                                    = false
+  existing_app_service_plan_resource_group_name             = ""
+  existing_app_service_plan_name                            = ""
+  ai_search_reuse                                           = false
+  existing_ai_search_resource_group_name                    = ""
+  existing_ai_search_name                                   = ""
+  ai_services_reuse                                         = false
+  existing_ai_services_resource_group_name                  = ""
+  existing_ai_services_name                                 = ""
+  cosmos_db_reuse                                           = false
+  existing_cosmos_db_resource_group_name                    = ""
+  existing_cosmos_db_account_name                           = ""
+  existing_cosmos_db_database_name                          = ""
+  key_vault_reuse                                           = false
+  existing_key_vault_resource_group_name                    = ""
+  existing_key_vault_name                                   = ""
+  storage_reuse                                             = false
+  existing_storage_resource_group_name                      = ""
+  existing_storage_name                                     = ""
+  vnet_reuse                                                = false
+  existing_vnet_resource_group_name                         = ""
+  existing_vnet_name                                        = ""
+  orchestrator_function_app_reuse                           = false
+  existing_orchestrator_function_app_resource_group_name    = ""
+  existing_orchestrator_function_app_name                   = ""
+  data_ingestion_function_app_reuse                         = false
+  existing_data_ingestion_function_app_resource_group_name  = ""
+  existing_data_ingestion_function_app_name                 = ""
+  app_service_reuse                                         = false
+  existing_app_service_name                                 = ""
+  existing_app_service_name_resource_group_name             = ""
+  orchestrator_function_app_storage_reuse                   = false
+  existing_orchestrator_function_app_storage_name           = ""
+  existing_orchestrator_function_app_storage_resource_group_name = ""
+  data_ingestion_function_app_storage_reuse                 = false
+  existing_data_ingestion_function_app_storage_name         = ""
+  existing_data_ingestion_function_app_storage_resource_group_name = ""
+}
+
+# Additional Tags
+deployment_tags = {
+  Environment = "Development"
+  Project     = "GPT-RAG"
+  Owner       = "YourName"
+}
