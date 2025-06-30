@@ -141,3 +141,11 @@ resource "azurerm_role_assignment" "principal_orchestrator_storage_blob_data_con
   role_definition_name = "Storage Blob Data Contributor"
   principal_id         = var.principal_id
 }
+
+# VM Search Service Access (when VM is deployed for network isolation)
+resource "azurerm_role_assignment" "vm_search_service_contributor" {
+  count                = var.vm_principal_id != "" ? 1 : 0
+  scope                = var.search_service_id
+  role_definition_name = "Search Service Contributor"
+  principal_id         = var.vm_principal_id
+}

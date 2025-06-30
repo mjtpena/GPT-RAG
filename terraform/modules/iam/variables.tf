@@ -30,6 +30,12 @@ variable "search_service_principal_id" {
   type        = string
 }
 
+variable "vm_principal_id" {
+  description = "VM principal ID"
+  type        = string
+  default     = ""
+}
+
 # Resource IDs
 variable "key_vault_id" {
   description = "Key Vault ID"

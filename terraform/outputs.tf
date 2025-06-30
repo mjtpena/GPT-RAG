@@ -138,10 +138,10 @@ output "AZURE_DATABASE_SUBNET_PREFIX" {
 output "AZURE_DB_CONFIG" {
   description = "Database configuration"
   value = {
-    db_account_name                = local.cosmos_account_name
-    db_database_name               = local.cosmos_database_name
-    conversation_container_name    = var.azure_db_config.conversation_container_name != "" ? var.azure_db_config.conversation_container_name : "conversations"
-    datasources_container_name     = var.azure_db_config.datasources_container_name != "" ? var.azure_db_config.datasources_container_name : "datasources"
+    dbAccountName              = local.cosmos_account_name
+    dbDatabaseName            = local.cosmos_database_name
+    conversationContainerName  = var.azure_db_config.conversation_container_name != "" ? var.azure_db_config.conversation_container_name : "conversations"
+    datasourcesContainerName   = var.azure_db_config.datasources_container_name != "" ? var.azure_db_config.datasources_container_name : "datasources"
   }
 }
 
@@ -213,11 +213,6 @@ output "AZURE_RESOURCE_GROUP_NAME" {
 output "AZURE_RETRIEVAL_APPROACH" {
   description = "Retrieval approach"
   value       = local.retrieval_approach
-}
-
-output "AZURE_REUSE_CONFIG" {
-  description = "Azure reuse configuration"
-  value       = var.azure_reuse_config
 }
 
 output "AZURE_SEARCH_ANALYZER_NAME" {
@@ -318,6 +313,11 @@ output "AZURE_ZERO_TRUST" {
 output "AZURE_SEARCH_USE_MIS" {
   description = "Search use managed identity"
   value       = var.search_use_mis
+}
+
+output "AZURE_REUSE_CONFIG" {
+  description = "Azure reuse configuration object"
+  value       = var.azure_reuse_config
 }
 
 # Additional outputs for the frontend URL

@@ -26,11 +26,25 @@ variable "documents_container_name" {
 variable "images_container_name" {
   description = "Images container name"
   type        = string
+  default     = ""
 }
 
 variable "nl2sql_container_name" {
   description = "NL2SQL container name"
   type        = string
+  default     = ""
+}
+
+variable "storage_reuse" {
+  description = "Whether to reuse existing storage account"
+  type        = bool
+  default     = false
+}
+
+variable "existing_storage_resource_group_name" {
+  description = "Resource group name of existing storage account"
+  type        = string
+  default     = ""
 }
 
 variable "tags" {

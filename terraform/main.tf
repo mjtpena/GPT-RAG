@@ -52,24 +52,45 @@ locals {
   # Resource group name
   resource_group_name = var.resource_group_name != "" ? var.resource_group_name : "rg-${var.environment_name}"
   
-  # Generate resource names with fallbacks
-  key_vault_name                  = var.key_vault_name != "" ? var.key_vault_name : "kv0-${local.resource_token}"
-  storage_account_name           = var.storage_account_name != "" ? var.storage_account_name : "strag0${local.resource_token}"
-  openai_service_name            = var.openai_service_name != "" ? var.openai_service_name : "oai0-${local.resource_token}"
-  ai_services_name               = var.ai_services_name != "" ? var.ai_services_name : "ai0-${local.resource_token}"
-  app_service_plan_name          = var.app_service_plan_name != "" ? var.app_service_plan_name : "appplan0-${local.resource_token}"
-  app_insights_name              = var.app_insights_name != "" ? var.app_insights_name : "appins0-${local.resource_token}"
-  app_service_name               = var.app_service_name != "" ? var.app_service_name : "webgpt0-${local.resource_token}"
-  orchestrator_function_name     = var.orchestrator_function_app_name != "" ? var.orchestrator_function_app_name : "fnorch0-${local.resource_token}"
-  data_ingestion_function_name   = var.data_ingestion_function_app_name != "" ? var.data_ingestion_function_app_name : "fninges0-${local.resource_token}"
-  search_service_name            = var.search_service_name != "" ? var.search_service_name : "search0-${local.resource_token}"
-  cosmos_account_name            = var.azure_db_config.db_account_name != "" ? var.azure_db_config.db_account_name : "dbgpt0-${local.resource_token}"
-  cosmos_database_name           = var.azure_db_config.db_database_name != "" ? var.azure_db_config.db_database_name : "db0-${local.resource_token}"
-  load_testing_name              = var.load_testing_name != "" ? var.load_testing_name : "loadtest0-${local.resource_token}"
+  # Resource reuse logic matching Bicep
+  azure_reuse_config = var.azure_reuse_config
   
-  # Network settings
-  vnet_name = var.vnet_name != "" ? var.vnet_name : "aivnet0-${local.resource_token}"
+  # Generate resource names with reuse logic
+  key_vault_name = var.azure_reuse_config.key_vault_reuse ? var.azure_reuse_config.existing_key_vault_name : (var.key_vault_name != "" ? var.key_vault_name : "kv0-${local.resource_token}")
+  storage_account_name = var.azure_reuse_config.storage_reuse ? var.azure_reuse_config.existing_storage_name : (var.storage_account_name != "" ? var.storage_account_name : "strag0${local.resource_token}")
+  openai_service_name = var.azure_reuse_config.aoai_reuse ? var.azure_reuse_config.existing_aoai_name : (var.openai_service_name != "" ? var.openai_service_name : "oai0-${local.resource_token}")
+  ai_services_name = var.azure_reuse_config.ai_services_reuse ? var.azure_reuse_config.existing_ai_services_name : (var.ai_services_name != "" ? var.ai_services_name : "ai0-${local.resource_token}")
+  app_service_plan_name = var.azure_reuse_config.app_service_plan_reuse ? var.azure_reuse_config.existing_app_service_plan_name : (var.app_service_plan_name != "" ? var.app_service_plan_name : "appplan0-${local.resource_token}")
+  app_insights_name = var.azure_reuse_config.app_insights_reuse ? var.azure_reuse_config.existing_app_insights_name : (var.app_insights_name != "" ? var.app_insights_name : "appins0-${local.resource_token}")
+  app_service_name = var.azure_reuse_config.app_service_reuse ? var.azure_reuse_config.existing_app_service_name : (var.app_service_name != "" ? var.app_service_name : "webgpt0-${local.resource_token}")
+  orchestrator_function_name = var.azure_reuse_config.orchestrator_function_app_reuse ? var.azure_reuse_config.existing_orchestrator_function_app_name : (var.orchestrator_function_app_name != "" ? var.orchestrator_function_app_name : "fnorch0-${local.resource_token}")
+  data_ingestion_function_name = var.azure_reuse_config.data_ingestion_function_app_reuse ? var.azure_reuse_config.existing_data_ingestion_function_app_name : (var.data_ingestion_function_app_name != "" ? var.data_ingestion_function_app_name : "fninges0-${local.resource_token}")
+  search_service_name = var.azure_reuse_config.ai_search_reuse ? var.azure_reuse_config.existing_ai_search_name : (var.search_service_name != "" ? var.search_service_name : "search0-${local.resource_token}")
+  cosmos_account_name = var.azure_reuse_config.cosmos_db_reuse ? var.azure_reuse_config.existing_cosmos_db_account_name : (var.azure_db_config.db_account_name != "" ? var.azure_db_config.db_account_name : "dbgpt0-${local.resource_token}")
+  cosmos_database_name = var.azure_reuse_config.cosmos_db_reuse ? var.azure_reuse_config.existing_cosmos_db_database_name : (var.azure_db_config.db_database_name != "" ? var.azure_db_config.db_database_name : "db0-${local.resource_token}")
+  load_testing_name = var.load_testing_name != "" ? var.load_testing_name : "loadtest0-${local.resource_token}"
+  
+  # Function app storage accounts
+  orchestrator_storage_name = var.azure_reuse_config.orchestrator_function_app_storage_reuse ? var.azure_reuse_config.existing_orchestrator_function_app_storage_name : "${local.storage_account_name}orc"
+  data_ingestion_storage_name = var.azure_reuse_config.data_ingestion_function_app_storage_reuse ? var.azure_reuse_config.existing_data_ingestion_function_app_storage_name : "${local.storage_account_name}ing"
+  
+  # Resource group names for reused resources
+  key_vault_resource_group_name = var.azure_reuse_config.key_vault_reuse ? var.azure_reuse_config.existing_key_vault_resource_group_name : local.resource_group_name
+  storage_resource_group_name = var.azure_reuse_config.storage_reuse ? var.azure_reuse_config.existing_storage_resource_group_name : local.resource_group_name
+  openai_resource_group_name = var.azure_reuse_config.aoai_reuse ? var.azure_reuse_config.existing_aoai_resource_group_name : local.resource_group_name
+  ai_services_resource_group_name = var.azure_reuse_config.ai_services_reuse ? var.azure_reuse_config.existing_ai_services_resource_group_name : local.resource_group_name
+  app_insights_resource_group_name = var.azure_reuse_config.app_insights_reuse ? var.azure_reuse_config.existing_app_insights_resource_group_name : local.resource_group_name
+  search_resource_group_name = var.azure_reuse_config.ai_search_reuse ? var.azure_reuse_config.existing_ai_search_resource_group_name : local.resource_group_name
+  cosmos_resource_group_name = var.azure_reuse_config.cosmos_db_reuse ? var.azure_reuse_config.existing_cosmos_db_resource_group_name : local.resource_group_name
+  orchestrator_function_resource_group_name = var.azure_reuse_config.orchestrator_function_app_reuse ? var.azure_reuse_config.existing_orchestrator_function_app_resource_group_name : local.resource_group_name
+  data_ingestion_function_resource_group_name = var.azure_reuse_config.data_ingestion_function_app_reuse ? var.azure_reuse_config.existing_data_ingestion_function_app_resource_group_name : local.resource_group_name
+  orchestrator_storage_resource_group_name = var.azure_reuse_config.orchestrator_function_app_storage_reuse ? var.azure_reuse_config.existing_orchestrator_function_app_storage_resource_group_name : local.resource_group_name  
+  data_ingestion_storage_resource_group_name = var.azure_reuse_config.data_ingestion_function_app_storage_reuse ? var.azure_reuse_config.existing_data_ingestion_function_app_storage_resource_group_name : local.resource_group_name
+  
+  # Network settings with reuse logic
+  vnet_name = var.azure_reuse_config.vnet_reuse ? var.azure_reuse_config.existing_vnet_name : (var.vnet_name != "" ? var.vnet_name : "aivnet0-${local.resource_token}")
   vnet_address = var.vnet_address != "" ? var.vnet_address : "10.0.0.0/23"
+  vnet_resource_group_name = var.azure_reuse_config.vnet_reuse ? var.azure_reuse_config.existing_vnet_resource_group_name : local.resource_group_name
   
   # Subnet configurations
   ai_subnet_name       = var.ai_subnet_name != "" ? var.ai_subnet_name : "ai-subnet"
@@ -161,10 +182,15 @@ resource "azurerm_resource_group" "main" {
   name     = local.resource_group_name
   location = var.location
   tags     = local.common_tags
+  
+  lifecycle {
+    prevent_destroy = false
+  }
 }
 
 # Networking Module
 module "networking" {
+  count  = var.network_isolation && !var.azure_reuse_config.vnet_reuse ? 1 : 0
   source = "./modules/networking"
   
   network_isolation         = var.network_isolation
@@ -188,6 +214,89 @@ module "networking" {
   bastion_subnet_prefix    = local.bastion_subnet_prefix
 }
 
+# Data source for existing VNet (when reusing)
+data "azurerm_virtual_network" "existing" {
+  count               = var.azure_reuse_config.vnet_reuse ? 1 : 0
+  name                = local.vnet_name
+  resource_group_name = local.vnet_resource_group_name
+}
+
+# Data sources for existing subnets (when reusing VNet)
+data "azurerm_subnet" "ai_subnet_existing" {
+  count                = var.azure_reuse_config.vnet_reuse && var.network_isolation ? 1 : 0
+  name                 = local.ai_subnet_name
+  virtual_network_name = local.vnet_name
+  resource_group_name  = local.vnet_resource_group_name
+}
+
+data "azurerm_subnet" "app_int_subnet_existing" {
+  count                = var.azure_reuse_config.vnet_reuse && var.network_isolation ? 1 : 0
+  name                 = local.app_int_subnet_name
+  virtual_network_name = local.vnet_name
+  resource_group_name  = local.vnet_resource_group_name
+}
+
+data "azurerm_subnet" "app_services_subnet_existing" {
+  count                = var.azure_reuse_config.vnet_reuse && var.network_isolation ? 1 : 0
+  name                 = local.app_services_subnet_name
+  virtual_network_name = local.vnet_name
+  resource_group_name  = local.vnet_resource_group_name
+}
+
+data "azurerm_subnet" "database_subnet_existing" {
+  count                = var.azure_reuse_config.vnet_reuse && var.network_isolation ? 1 : 0
+  name                 = local.database_subnet_name
+  virtual_network_name = local.vnet_name
+  resource_group_name  = local.vnet_resource_group_name
+}
+
+data "azurerm_subnet" "bastion_subnet_existing" {
+  count                = var.azure_reuse_config.vnet_reuse && var.network_isolation && var.deploy_vm ? 1 : 0
+  name                 = local.bastion_subnet_name
+  virtual_network_name = local.vnet_name
+  resource_group_name  = local.vnet_resource_group_name
+}
+
+# Local values for subnet IDs
+locals {
+  # Determine subnet IDs based on whether we're creating or reusing
+  ai_subnet_id = var.network_isolation ? (
+    var.azure_reuse_config.vnet_reuse ? 
+    data.azurerm_subnet.ai_subnet_existing[0].id : 
+    module.networking[0].ai_subnet_id
+  ) : ""
+  
+  app_int_subnet_id = var.network_isolation ? (
+    var.azure_reuse_config.vnet_reuse ? 
+    data.azurerm_subnet.app_int_subnet_existing[0].id : 
+    module.networking[0].app_int_subnet_id
+  ) : ""
+  
+  app_services_subnet_id = var.network_isolation ? (
+    var.azure_reuse_config.vnet_reuse ? 
+    data.azurerm_subnet.app_services_subnet_existing[0].id : 
+    module.networking[0].app_services_subnet_id
+  ) : ""
+  
+  database_subnet_id = var.network_isolation ? (
+    var.azure_reuse_config.vnet_reuse ? 
+    data.azurerm_subnet.database_subnet_existing[0].id : 
+    module.networking[0].database_subnet_id
+  ) : ""
+  
+  vnet_id = var.network_isolation ? (
+    var.azure_reuse_config.vnet_reuse ? 
+    data.azurerm_virtual_network.existing[0].id : 
+    module.networking[0].vnet_id
+  ) : ""
+  
+  bastion_subnet_id = var.network_isolation && var.deploy_vm ? (
+    var.azure_reuse_config.vnet_reuse ? 
+    data.azurerm_subnet.bastion_subnet_existing[0].id : 
+    module.networking[0].bastion_subnet_id
+  ) : ""
+}
+
 # Storage Module
 module "storage" {
   source = "./modules/storage"
@@ -200,6 +309,36 @@ module "storage" {
   images_container_name     = local.storage_images_container_name
   nl2sql_container_name     = local.storage_nl2sql_container_name
   tags                      = local.common_tags
+  storage_reuse            = var.azure_reuse_config.storage_reuse
+  existing_storage_resource_group_name = var.azure_reuse_config.existing_storage_resource_group_name
+}
+
+# Orchestrator Function App Storage Account
+module "orchestrator_storage" {
+  source = "./modules/storage"
+  
+  storage_account_name      = local.orchestrator_storage_name
+  resource_group_name       = local.orchestrator_function_resource_group_name
+  location                  = var.location
+  network_isolation         = var.network_isolation
+  documents_container_name  = "deploymentpackage"
+  tags                      = local.common_tags
+  storage_reuse            = var.azure_reuse_config.orchestrator_function_app_storage_reuse
+  existing_storage_resource_group_name = var.azure_reuse_config.existing_orchestrator_function_app_storage_resource_group_name
+}
+
+# Data Ingestion Function App Storage Account
+module "data_ingestion_storage" {
+  source = "./modules/storage"
+  
+  storage_account_name      = local.data_ingestion_storage_name
+  resource_group_name       = local.data_ingestion_function_resource_group_name
+  location                  = var.location
+  network_isolation         = var.network_isolation
+  documents_container_name  = "deploymentpackage"
+  tags                      = local.common_tags
+  storage_reuse            = var.azure_reuse_config.data_ingestion_function_app_storage_reuse
+  existing_storage_resource_group_name = var.azure_reuse_config.existing_data_ingestion_function_app_storage_resource_group_name
 }
 
 # Key Vault Module
@@ -275,6 +414,7 @@ module "search" {
   resource_token             = local.resource_token
   openai_resource_id         = module.ai_services.openai_account_id
   storage_account_id         = module.storage.storage_account_id
+  data_ingestion_function_id = module.compute.data_ingestion_function_id
   tags                       = local.common_tags
   
   depends_on = [module.keyvault, module.ai_services, module.storage]
@@ -293,13 +433,13 @@ module "compute" {
   resource_group_name                   = azurerm_resource_group.main.name
   network_isolation                     = var.network_isolation
   provision_application_insights        = var.provision_application_insights
-  app_integration_subnet_id             = module.networking.app_integration_subnet_id
+  app_integration_subnet_id             = local.app_int_subnet_id
   func_app_runtime_version              = local.func_app_runtime_version
   app_service_runtime_version           = local.app_service_runtime_version
-  orchestrator_storage_account_name     = module.storage.orchestrator_storage_account_name
-  orchestrator_storage_account_key      = module.storage.orchestrator_storage_account_connection_string
-  data_ingestion_storage_account_name   = module.storage.data_ingestion_storage_account_name
-  data_ingestion_storage_account_key    = module.storage.data_ingestion_storage_account_connection_string
+  orchestrator_storage_account_name     = module.orchestrator_storage.storage_account_name
+  orchestrator_storage_account_key      = module.orchestrator_storage.storage_account_connection_string
+  data_ingestion_storage_account_name   = module.data_ingestion_storage.storage_account_name
+  data_ingestion_storage_account_key    = module.data_ingestion_storage.storage_account_connection_string
   tags                                  = local.common_tags
 
   # App Settings for Orchestrator Function
@@ -370,11 +510,12 @@ module "compute" {
     "LOGLEVEL"                       = "INFO"
   }
   
-  depends_on = [module.storage, module.keyvault, module.cosmosdb, module.ai_services, module.search]
+  depends_on = [module.storage, module.orchestrator_storage, module.data_ingestion_storage, module.keyvault, module.cosmosdb, module.ai_services, module.search]
 }
 
 # Private Endpoints Module
 module "private_endpoints" {
+  count  = var.network_isolation && !var.azure_reuse_config.vnet_reuse ? 1 : 0
   source = "./modules/private_endpoints"
   
   network_isolation                     = var.network_isolation
@@ -382,9 +523,9 @@ module "private_endpoints" {
   resource_group_name                   = azurerm_resource_group.main.name
   
   # Subnet IDs
-  ai_subnet_id                         = module.networking.ai_subnet_id
-  database_subnet_id                   = module.networking.database_subnet_id
-  app_services_subnet_id               = module.networking.app_services_subnet_id
+  ai_subnet_id                         = local.ai_subnet_id
+  database_subnet_id                   = local.database_subnet_id
+  app_services_subnet_id               = local.app_services_subnet_id
   
   # Private endpoint names
   storage_pe_name                      = local.storage_pe_name
@@ -407,21 +548,42 @@ module "private_endpoints" {
   orchestrator_function_id             = module.compute.orchestrator_function_id
   data_ingestion_function_id           = module.compute.data_ingestion_function_id
   frontend_app_id                      = module.compute.frontend_app_id
-  orchestrator_storage_account_id      = module.storage.orchestrator_storage_account_id
-  data_ingestion_storage_account_id    = module.storage.data_ingestion_storage_account_id
+  orchestrator_storage_account_id      = module.orchestrator_storage.storage_account_id
+  data_ingestion_storage_account_id    = module.data_ingestion_storage.storage_account_id
   
   # DNS Zone IDs
-  blob_dns_zone_id                     = module.networking.blob_dns_zone_id
-  documents_dns_zone_id                = module.networking.documents_dns_zone_id
-  vault_dns_zone_id                    = module.networking.vault_dns_zone_id
-  websites_dns_zone_id                 = module.networking.websites_dns_zone_id
-  cognitiveservices_dns_zone_id        = module.networking.cognitiveservices_dns_zone_id
-  openai_dns_zone_id                   = module.networking.openai_dns_zone_id
-  search_dns_zone_id                   = module.networking.search_dns_zone_id
+  blob_dns_zone_id                     = module.networking[0].blob_dns_zone_id
+  documents_dns_zone_id                = module.networking[0].documents_dns_zone_id
+  vault_dns_zone_id                    = module.networking[0].vault_dns_zone_id
+  websites_dns_zone_id                 = module.networking[0].websites_dns_zone_id
+  cognitiveservices_dns_zone_id        = module.networking[0].cognitiveservices_dns_zone_id
+  openai_dns_zone_id                   = module.networking[0].openai_dns_zone_id
+  search_dns_zone_id                   = module.networking[0].search_dns_zone_id
   
   tags = local.common_tags
   
-  depends_on = [module.networking, module.storage, module.keyvault, module.cosmosdb, module.ai_services, module.search, module.compute]
+  depends_on = [module.networking, module.storage, module.orchestrator_storage, module.data_ingestion_storage, module.keyvault, module.cosmosdb, module.ai_services, module.search, module.compute]
+}
+
+# VM Module (for network isolated environments)
+module "vm" {
+  source = "./modules/vm"
+  
+  network_isolation         = var.network_isolation
+  deploy_vm                = var.deploy_vm
+  vm_name                  = local.vm_name
+  vm_user_name             = var.vm_user_name
+  vm_user_password         = var.vm_user_initial_password
+  vm_password_secret_name  = local.vm_kv_secret_name
+  bastion_kv_name         = local.bastion_kv_name
+  location                = var.location
+  resource_group_name     = azurerm_resource_group.main.name
+  ai_subnet_id            = local.ai_subnet_id
+  bastion_subnet_id       = local.bastion_subnet_id
+  principal_id            = var.principal_id != "" ? var.principal_id : data.azurerm_client_config.current.object_id
+  tags                    = local.common_tags
+  
+  depends_on = [module.networking]
 }
 
 # IAM Module
@@ -436,12 +598,13 @@ module "iam" {
   data_ingestion_function_principal_id = module.compute.data_ingestion_function_principal_id
   frontend_app_principal_id            = module.compute.frontend_app_principal_id
   search_service_principal_id          = module.search.search_service_principal_id
+  vm_principal_id                      = module.vm.vm_principal_id
   
   # Resource IDs
   key_vault_id                         = module.keyvault.key_vault_id
   storage_account_id                   = module.storage.storage_account_id
-  orchestrator_storage_account_id      = module.storage.orchestrator_storage_account_id
-  data_ingestion_storage_account_id    = module.storage.data_ingestion_storage_account_id
+  orchestrator_storage_account_id      = module.orchestrator_storage.storage_account_id
+  data_ingestion_storage_account_id    = module.data_ingestion_storage.storage_account_id
   cosmos_account_id                    = module.cosmosdb.cosmos_account_id
   cosmos_account_name                  = module.cosmosdb.cosmos_account_name
   openai_account_id                    = module.ai_services.openai_account_id
@@ -449,7 +612,7 @@ module "iam" {
   search_service_id                    = module.search.search_service_id
   orchestrator_function_id             = module.compute.orchestrator_function_id
   
-  depends_on = [module.keyvault, module.storage, module.cosmosdb, module.ai_services, module.search, module.compute]
+  depends_on = [module.keyvault, module.storage, module.orchestrator_storage, module.data_ingestion_storage, module.cosmosdb, module.ai_services, module.search, module.compute, module.vm]
 }
 
 # Load Testing (Optional)
